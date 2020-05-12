@@ -38,7 +38,7 @@ class _SosPageState extends State<SosPage> with TickerProviderStateMixin {
   final FirestoreService _firestoreService = FirestoreService();
 
   Future<void> sendAlert ()async {
-    List<GroupHeader> activeGroupes = await utilisateur.activeGroups();
+    List<GroupHeader> activeGroupes = await utilisateur.getUsersGroupsHeaders ();
     for(GroupHeader group in activeGroupes){
       Group g = await _firestoreService.getGroupInfo(group.gid);
       g.addMesssage('${utilisateur.sharableUserInfo.displayName} is having an emergency try to contact them as fast as possible',
