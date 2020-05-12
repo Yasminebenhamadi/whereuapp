@@ -50,6 +50,7 @@ class _RegisterState extends State<Register> {
       }
     }
     catch (e) {
+      print(e);
       print(e.code);
       switch (e.code) {
         case 'ERROR_EMAIL_ALREADY_IN_USE':
