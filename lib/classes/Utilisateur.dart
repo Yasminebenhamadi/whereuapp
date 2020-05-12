@@ -188,7 +188,7 @@ class Utilisateur {
   }
 
   //---------------------------------------BatteryLevel------------------------------------------------
-  void setBatteryLevel () async {
+  /*void setBatteryLevel () async {
     while (true) {//_deviceInfoService.getBatteryLevel) {
       int bl = await _deviceInfoService.batteryLevel();
       this._usersInfoDoc.updateData({
@@ -198,7 +198,7 @@ class Utilisateur {
       });
       await Future.delayed(Duration(minutes: 1));
     }
-  }
+  }*/
 
   void removeBatteryLevel () async {
     //_deviceInfoService.getBatteryLevel = false ;
