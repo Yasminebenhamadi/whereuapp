@@ -15,9 +15,6 @@ class _PhonePageState extends State<PhonePage> {
   final formKey = GlobalKey<FormState>();
   String phoneNumber;
   Country country ;
-  void validateAndSave(){ final form =  formKey.currentState;
-  if(form.validate()){ print('Forme is valid');} else { print('Forme is not valid');}
-  }
 
   String confirmedNumber = '';
   String _validatePhoneNumber(String value){
@@ -99,6 +96,7 @@ class _PhonePageState extends State<PhonePage> {
                           SizedBox( width:2.0),
                           Expanded (child :
                           Form(
+                            key: formKey,
                             child: TextFormField(
                               keyboardType: TextInputType.phone,
                               decoration: InputDecoration(

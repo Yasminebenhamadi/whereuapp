@@ -16,9 +16,12 @@ class _SendState extends State<Send> {
   Future<void> _sendCode () async {
     try {
       await _servicesAuth.sendVerificationCode(widget.phoneNumber);
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> Verify(phoneNumber: widget.phoneNumber,servicesAuth:_servicesAuth))) ;
     }
     catch (e){
+      print('------------------send codeeee--------------------------------');
       print(e);
+      print('--------------------------------------------------------------');
     }
   }
 
@@ -80,7 +83,6 @@ class _SendState extends State<Send> {
                             elevation: 5.0,
                             onPressed: () async {
                               await _sendCode();
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=> Verify(phoneNumber: widget.phoneNumber,servicesAuth:_servicesAuth))) ;
                            },
                             padding: EdgeInsets.all(15.0),
                             shape: RoundedRectangleBorder(

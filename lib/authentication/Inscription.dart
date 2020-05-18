@@ -47,11 +47,12 @@ class _RegisterState extends State<Register> {
         form.save();
         utilisateur = await _servicesAuth.registerEmail(
             _email, _password, _displayName, _username,_dateOfBirth,_gender);
+        Provider.of<User>(context, listen: false).setUtilisateur(utilisateur);
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Phone()));
       }
     }
     catch (e) {
       print(e);
-      print(e.code);
       switch (e.code) {
         case 'ERROR_EMAIL_ALREADY_IN_USE':
           {
@@ -67,6 +68,14 @@ class _RegisterState extends State<Register> {
             invalidEmail = true ;
             form.validate();
             invalidEmail = false ;
+          }
+          break;
+        case 'USERNAME_EXISTS' :
+          {
+            print('USERNAME_EXISTS');
+            _userNameExists = true ;
+            form.validate();
+            _userNameExists = false ;
           }
           break;
         default:
@@ -355,13 +364,8 @@ class _RegisterState extends State<Register> {
                           width: 250.0,
                           child: RaisedButton(
                             elevation: 5.0,
-                            onPressed: ()  {
-                              _register().then((_) async {
-                                if(utilisateur!=null){
-                                  Provider.of<User>(context, listen: false).setUtilisateur(utilisateur);
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Phone()));
-                                }
-                              });
+                            onPressed: () async {
+                              await _register();
                             },
                             padding: EdgeInsets.all(15.0),
                             shape: RoundedRectangleBorder(

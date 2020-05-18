@@ -150,6 +150,7 @@ class _cercleUserState extends State<cercleUser> {
                                       trailing:  Icon (Icons.chevron_right,color:  Color(0xffE8652D), ) ,
                                       onTap : ()async {
                                         await _firestoreService.getGroupInfo(groupHeader.gid).then((group) {
+                                          Provider.of<User>(context, listen: false).setGroup(group);
                                           if(group.adminID == utilisateur.sharableUserInfo.id)
                                           {
                                             Navigator.push(context, MaterialPageRoute(builder: (context) => gestionCercleAdmin (group : group )));
@@ -158,7 +159,6 @@ class _cercleUserState extends State<cercleUser> {
                                           {
                                             Navigator.push(context, MaterialPageRoute(builder: (context) => gestionCercle (group : group )));
                                           }
-
                                         });
                                       },
                                       leading: new Hero(

@@ -17,6 +17,7 @@ class _AdressePageState extends State<AdressePage> {
 
   final formKey = GlobalKey<FormState>();
   String _email;
+  bool _emailNotFound = false;
   ServicesAuth _servicesAuth = ServicesAuth();
 
 
@@ -99,10 +100,15 @@ class _AdressePageState extends State<AdressePage> {
                                   return 'Saisissez votre email s\'il vous plait' ;
                                 else if (!EmailValidator.validate(val, true))
                                   return 'Cet email n\'est pas valide' ;
+                                else if (this._emailNotFound)
+                                  return 'Email not found';
                                 else
                                   return  null;
                               },
-                              onSaved: ( String val){_email = val; },
+                              onChanged: (String val){
+                                print('emailllllllllllllllllllllllllllllll');
+                                _email = val;
+                                  },
                               textAlign:TextAlign.center,
                             ),
                           )),
@@ -129,6 +135,12 @@ class _AdressePageState extends State<AdressePage> {
                 }
                 catch(e){
                   print(e);
+                if (e.code== 'ERROR_USER_NOT_FOUND' )
+                {
+                _emailNotFound = true;
+                formKey.currentState.validate();
+                _emailNotFound = false;
+                }
                 }
               },
               child: Text('Envoyer', style : TextStyle(fontSize:20.0, fontWeight: FontWeight.bold)),

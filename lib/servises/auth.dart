@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async' ;
 import 'package:whereuapp/classes/SharableUserInfo.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,6 +16,7 @@ class ServicesAuth {
   //Attributes used in phone authenticaion :
   String _verificationID;
   String _smsCode;
+  bool _phoneVerified ;
   List<int> _forceResendingToken;
 
   Future<bool> isSignedIn() async {
@@ -52,16 +54,17 @@ class ServicesAuth {
         print('something went wrong when sending the verification email'+error.code);
       });
       String uid = user.uid;
-      Utilisateur utilisateur =  uid != null
-          ? Utilisateur(uid, displayName, username, gender, dateOfBirth)
-          : null;
-      if(utilisateur!=null)
+      if(uid!=null)
         {
-          await _firestoreService.createUserDoc(utilisateur)
+          print('++++++'+(await _firestoreService.userNameExists(username)).toString());
+          await _firestoreService.createAccount(uid, displayName, username,gender,dateOfBirth)
               .then((_){
             print('A user doc has been created');
           });
       }
+      Utilisateur utilisateur =  uid != null
+          ? Utilisateur(uid, displayName, username, gender, dateOfBirth)
+          : null;
       return utilisateur ;//Return an 'Utilisateur' object
   }
 
@@ -77,12 +80,6 @@ class ServicesAuth {
     SharableUserInfo userInfo = await _firestoreService.getUserInfo(uid);
     return Utilisateur.old(uid, userInfo);
   }
-
-  Future<Utilisateur> signInFacebook (){
-
-
-  }
-
 
   //-------------------------Changing user's email-----------------------------------------------
   Future<void> changeEmail(String password ,String newEmail) async
@@ -127,6 +124,7 @@ class ServicesAuth {
   //Sending a verification code to the the provided phone number
   Future<void> sendVerificationCode(String phone) async {
     //_auth.setLanguageCode('fr');
+    _phoneVerified = false ;
     if(phone!=null)
       await _firebaseAuth.verifyPhoneNumber(phoneNumber: phone, timeout: Duration(seconds: 60), verificationCompleted: _verificationCompleted,
           verificationFailed: _verificationFailed, codeSent: _codeSent, codeAutoRetrievalTimeout: _codeAutoRetrievalTimeout);
@@ -135,13 +133,20 @@ class ServicesAuth {
   //Auto-retrieval (detect SMS) / instant verification (no send/retrieve)
   void _verificationCompleted(AuthCredential credential) async {
     FirebaseUser user = await _firebaseAuth.currentUser();
+    _phoneVerified = false ;
     if(user!=null){
-      user.linkWithCredential(credential).then((_){
-        print('phone number added');
-      }).catchError((error){
-        print('couldn\'t add phone number (at linking with credentials)'+error.code);
-      });
+      if(user.phoneNumber == null){
+        print('phooone emtyyyyy');
+        //Creating  a PhoneAuthCredential object
+        await user.linkWithCredential(credential);
+      }
+      else {
+        print('phooone noooot emtyyyyy');
+        await user.updatePhoneNumberCredential(credential);
+      }
+      print('phone number added');
     }
+    throw SendCodeException('VERIFICATION_COMPLETED');
   }
   //Couldn't send SMS or Invalid Code
   void _verificationFailed(AuthException authException) async {
@@ -166,7 +171,6 @@ class ServicesAuth {
   }
 
   void _codeSent (String verificationId, [code]){
-    print('please enter the code that has been sent to you');
     this._verificationID = verificationId;
     this._forceResendingToken = code;
   }
@@ -177,9 +181,9 @@ class ServicesAuth {
   }
   //***************************************************************************
   //Adding a phone number  (send verification email beforr using this method)
-  Future<void> linkPhoneNumber (String phone,Utilisateur u,String smsCode) async {
+  Future<void> linkPhoneNumber (String phone,String smsCode) async {
     FirebaseUser user = await _firebaseAuth.currentUser(); // Get current user
-    if ((user!=null) &&(u!=null)){
+    if ((user!=null)){
       this._smsCode = smsCode;
       AuthCredential credential = PhoneAuthProvider.getCredential(verificationId: this._verificationID, smsCode: this._smsCode);
       if(user.phoneNumber == null){
@@ -191,7 +195,6 @@ class ServicesAuth {
         print('phooone noooot emtyyyyy');
         await user.updatePhoneNumberCredential(credential);
       }
-      await u.setPhone(phone);
     }
     else
       print('hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii');
@@ -290,6 +293,9 @@ class ServicesAuth {
     await _firestoreService.removeToken(uid);
     await _firebaseAuth.signOut();
   }
+
+  bool get phoneVerified => _phoneVerified;
+
 }
 
 class UsersCredentials {
@@ -321,4 +327,11 @@ class UsersCredentials {
   bool emailsIsSaved (String email){
     return _usersCredentials.containsKey(email);
   }
+
+}
+
+class SendCodeException {
+  String _code ;
+  SendCodeException(String code){_code = code ;}
+  String get code => _code ;
 }

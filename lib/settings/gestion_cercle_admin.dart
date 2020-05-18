@@ -121,9 +121,9 @@ class _gestionCercleAdminState extends State<gestionCercleAdmin> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () =>  Navigator.of(context)
-                            .push(new MaterialPageRoute(
+                            .pushReplacement(new MaterialPageRoute(
                             builder: (BuildContext context) =>
-                            new NamecerclePage(group: widget.group))),
+                            new NamecerclePage(/*group: widget.group*/))),
                         child: Row(
                           children: <Widget>[
                             SizedBox(
@@ -152,9 +152,9 @@ class _gestionCercleAdminState extends State<gestionCercleAdmin> {
                               iconSize: 30.0,
                               color: Color(0xffF1B97A),
                               onPressed: () => Navigator.of(context)
-                                  .push(new MaterialPageRoute(
+                                  .pushReplacement(new MaterialPageRoute(
                                 builder: (BuildContext context) =>
-                                new NamecerclePage(group: widget.group),
+                                new NamecerclePage(/*group: widget.group*/),
                               )),
                             )
                           ],
@@ -167,9 +167,9 @@ class _gestionCercleAdminState extends State<gestionCercleAdmin> {
                       ),
                       GestureDetector(
                         onTap: ( ) => Navigator.of(context)
-                            .push(new MaterialPageRoute(
+                            .pushReplacement(new MaterialPageRoute(
                           builder: (BuildContext context) =>
-                          new RadioButtonExample(group: widget.group),
+                          new RadioButtonExample(/*group: widget.group*/),
                         )),
                         child: Row(
                           children: <Widget>[
@@ -199,9 +199,9 @@ class _gestionCercleAdminState extends State<gestionCercleAdmin> {
                                 iconSize: 30.0,
                                 color: Color(0xffF1B97A),
                                 onPressed: () => Navigator.of(context)
-                                    .push(new MaterialPageRoute(
+                                    .pushReplacement(new MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                  new RadioButtonExample(group: widget.group),
+                                  new RadioButtonExample(/*group: widget.group*/),
                                 ))
                             )
                           ],
@@ -213,10 +213,11 @@ class _gestionCercleAdminState extends State<gestionCercleAdmin> {
                         color: Colors.grey.shade400,
                       ),
                       GestureDetector(
-                        onTap:  () => new MaterialPageRoute(
+                        onTap:  () => Navigator.of(context)
+                            .pushReplacement(new MaterialPageRoute(
                           builder: (BuildContext context) =>
-                          new InvitePage(group: widget.group),
-                        ),
+                          new InvitePage(/*group: widget.group*/)
+                        )),
                         child: Row(
                           children: <Widget>[
                             SizedBox(
@@ -245,9 +246,9 @@ class _gestionCercleAdminState extends State<gestionCercleAdmin> {
                                 iconSize: 30.0,
                                 color: Color(0xffF1B97A),
                                 onPressed: ()  => Navigator.of(context)
-                                    .push(new MaterialPageRoute(
+                                    .pushReplacement(new MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                  new InvitePage(group: widget.group),
+                                  new InvitePage(/*group: widget.group*/),
                                 )))
                           ],
                         ),
@@ -384,13 +385,9 @@ class _gestionCercleAdminState extends State<gestionCercleAdmin> {
                     ],
                   )
               ),
-
-
-
             ],
           ),
         )
-
     );
   }
   moveToLastSreen() {

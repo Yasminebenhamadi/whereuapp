@@ -1,12 +1,18 @@
 import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
+//import 'package:battery/battery.dart';
 class DeviceInfoService {
   final  DatabaseReference _infoConnected = FirebaseDatabase.instance.reference().child('.info/connected');
   final DatabaseReference _userStatus = FirebaseDatabase.instance.reference().child('status');
+  //final Battery _battery = Battery ();
   //TODO bool getBatteryLevel ;
 
   DeviceInfoService(bool getBatteryLevel){
     //this.getBatteryLevel = getBatteryLevel;
+  }
+  Future<int> batteryLevel  () async {
+    //return await  _battery.batteryLevel ;
+    return 100 ;
   }
 
   void listenToChangeStatus (String uid){

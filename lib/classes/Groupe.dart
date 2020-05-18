@@ -383,12 +383,10 @@ class Group extends ChangeNotifier {
     return markers;
   }
   Future <Set <Marker>>  syncroniser ()  async {
-    Set <Marker> markes = Set <Marker> ();
-    _members.forEach((member) async {
-      await member.documentReference.get().then((documentSnapShot){
-        member.membersInfo.setInfoGroup(documentSnapShot.data);
-      });
-    });
+    for(Member member in _members){
+      DocumentSnapshot documentSnapshot = await member.documentReference.get();
+      member.membersInfo.setInfoGroup(documentSnapshot.data);
+    }
     return addMarkers();
   }
   /*StreamSubscription _locationSubscription;
@@ -475,7 +473,6 @@ class Group extends ChangeNotifier {
    List<String> seenBy = new List<String> ();
     seenBy.add(expediteurID);
     Message message = Message(text, type, DateTime.now(), expediteurID,expediteurNom, false, false, seenBy);
-    DocumentReference messageDoc ;
     List<String> showTo = List<String> ();
     if (_members.isEmpty){
       await getMembers();
@@ -551,9 +548,6 @@ class Group extends ChangeNotifier {
     writeBatch.commit();
   }
   //-----------------------------Listening to changes -------------------------------
-  Stream<DocumentSnapshot> membersMergedStream (){
-    //StreamGroup streamGroup = StreamGroup () ;
-  }
   void listenToChangesInGroup () {
     //Listen to changes in members info :
     _members.forEach((member){
@@ -612,24 +606,6 @@ class Group extends ChangeNotifier {
     notifyListeners();
     addMesssage('This groupe has a new admin now : $_adminID', TypeMessage.AboutGroupe, '','') ;
   }
-  //On discussion
-  void _listenToChangesDiscussion (){
-   _discussionCollection.where('DateTime',isGreaterThan: _lastReadMessage).snapshots().listen((querySnapshot){
-      querySnapshot.documentChanges.forEach((documentChange){
-        switch(documentChange.type){
-          case DocumentChangeType.modified :
-            break;
-          case DocumentChangeType.removed :
-            break;
-          case DocumentChangeType.added :
-             Message message = Message.from(documentChange.document.documentID,documentChange.document.data) ;
-             setMessageDelivered(message).then((_) => _discussion.add(message));
-            break;
-        }
-      });
-    });
-  }
-
   Future<void> delete () async {
     await this._groupInfoDoc.delete();
     _members.forEach((member){

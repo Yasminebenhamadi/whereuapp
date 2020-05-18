@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
+import 'package:whereuapp/Wrapper.dart';
 import 'package:whereuapp/classes/Groupe.dart';
 import 'package:whereuapp/classes/Message.dart';
 import 'dart:async';
 
 import 'package:whereuapp/classes/Utilisateur.dart';
 import 'package:whereuapp/servises/firestore.dart';
+import 'package:provider/provider.dart';
 
 
 class SosPage extends StatefulWidget {
@@ -38,7 +40,7 @@ class _SosPageState extends State<SosPage> with TickerProviderStateMixin {
   final FirestoreService _firestoreService = FirestoreService();
 
   Future<void> sendAlert ()async {
-    List<GroupHeader> activeGroupes = await utilisateur.getUsersGroupsHeaders ();
+    List<GroupHeader> activeGroupes = await utilisateur.activeGroups();
     for(GroupHeader group in activeGroupes){
       Group g = await _firestoreService.getGroupInfo(group.gid);
       g.addMesssage('${utilisateur.sharableUserInfo.displayName} is having an emergency try to contact them as fast as possible',
@@ -123,7 +125,11 @@ class _SosPageState extends State<SosPage> with TickerProviderStateMixin {
     );
   }
 
+
   Widget build(BuildContext context) {
+    setState(() {
+      utilisateur =Provider.of<User>(context, listen: false).utilisateur;
+    });
     return Scaffold(
       backgroundColor: Colors.orange[200],
       body: SingleChildScrollView(

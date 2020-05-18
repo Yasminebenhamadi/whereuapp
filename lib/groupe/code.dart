@@ -79,7 +79,7 @@ class _codeState extends State<code> {
           FlatButton(
             onPressed: () {
               Share.share(widget.group.code);
-            }, //TODO select users and send code
+            },
             padding :EdgeInsets.all(15.0),
             child: Text('Envoyer le code', style : TextStyle(fontSize:18.0,fontWeight:FontWeight.bold)),
             color:  Color(0xffF1B97A),

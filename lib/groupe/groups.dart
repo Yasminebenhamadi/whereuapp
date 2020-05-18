@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -79,7 +77,6 @@ class _State extends State<Groups> {
                 return suggestionsBox;
               },
               onSuggestionSelected: (suggestion) {
-                GroupHeader publicGroupe = suggestion;
                 //TODO show public group's info
               },
             ),

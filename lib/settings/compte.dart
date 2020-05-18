@@ -97,6 +97,7 @@ class _SettingsOnePageState extends State<SettingsOnePage> {
                       builder : (context,asyncSnapshot) => CircleAvatar(
                         radius: 45,
                         backgroundImage: asyncSnapshot.data,
+                        backgroundColor: Colors.white,
                       ),
                     ),
                     trailing: Icon(

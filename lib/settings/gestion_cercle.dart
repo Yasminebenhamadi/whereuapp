@@ -153,7 +153,7 @@ class _gestionCercleState extends State<gestionCercle> {
                         onTap: () =>  Navigator.of(context)
                             .push(new MaterialPageRoute(
                           builder: (BuildContext context) =>
-                          new NamecerclePage(group: widget.group))),
+                          new NamecerclePage(/*group: widget.group*/))),
                         child: Row(
                           children: <Widget>[
                             SizedBox(
@@ -184,7 +184,7 @@ class _gestionCercleState extends State<gestionCercle> {
                               onPressed: () => Navigator.of(context)
                                   .push(new MaterialPageRoute(
                                 builder: (BuildContext context) =>
-                                    new NamecerclePage(group: widget.group,),
+                                    new NamecerclePage(/*group: widget.group,*/),
                               )),
                             )
                           ],
@@ -199,7 +199,7 @@ class _gestionCercleState extends State<gestionCercle> {
                         onTap: ( ) => Navigator.of(context)
                             .push(new MaterialPageRoute(
                           builder: (BuildContext context) =>
-                          new RadioButtonExample(group: widget.group),
+                          new RadioButtonExample(/*group: widget.group,*/),
                         )),
                         child: Row(
                           children: <Widget>[
@@ -231,7 +231,7 @@ class _gestionCercleState extends State<gestionCercle> {
                                 onPressed: () => Navigator.of(context)
                                         .push(new MaterialPageRoute(
                                       builder: (BuildContext context) =>
-                                          new RadioButtonExample(group: widget.group),
+                                          new RadioButtonExample(/*group: widget.group,*/),
                                     ))
                             )
                           ],
@@ -246,7 +246,7 @@ class _gestionCercleState extends State<gestionCercle> {
                         onTap:  () => Navigator.of(context)
                             .push(new MaterialPageRoute(
                           builder: (BuildContext context) =>
-                          new InvitePage(group: widget.group),
+                          new InvitePage(/*group: widget.group,*/),
                         )),
                         child: Row(
                           children: <Widget>[
@@ -278,7 +278,7 @@ class _gestionCercleState extends State<gestionCercle> {
                                 onPressed: ()  => Navigator.of(context)
                                     .push(new MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                  new InvitePage(group: widget.group),
+                                  new InvitePage(/*group: widget.group,*/),
                                 )))
                           ],
                         ),

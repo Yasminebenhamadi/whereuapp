@@ -8,7 +8,6 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:whereuapp/classes/Utilisateur.dart';
 import '../../classes/Groupe.dart';
 import '../../classes/Utilisateur.dart';
-import '../../classes/Utilisateur.dart';
 import 'package:whereuapp/home/home_page_2.dart';
 import 'package:geolocator/geolocator.dart';
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: "AIzaSyCN5CJGsvRnutmMNhpN8toEprd3fn7cIBg");

@@ -7,7 +7,6 @@ import 'package:whereuapp/classes/SharableUserInfo.dart';
 import 'package:path_provider/path_provider.dart';
 
 class StorageService{
-  StorageReference _storageReference = FirebaseStorage.instance.ref();
   Directory _tempDirectory;
   Future<void> setTempDir () async {
     _tempDirectory = await getTemporaryDirectory();

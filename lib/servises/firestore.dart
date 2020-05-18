@@ -5,7 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:whereuapp/classes/Groupe.dart';
 import 'package:whereuapp/classes/Request.dart';
 import 'package:whereuapp/classes/SharableUserInfo.dart';
-import 'package:whereuapp/classes/Utilisateur.dart';
 
 class FirestoreService {
 
@@ -14,22 +13,32 @@ class FirestoreService {
   Firestore get firestore => _firestore;
   //-------------------------------------------Utilisateur--------------------------------------------
   //Create a new User doc of the user
-  Future<void> createUserDoc(Utilisateur user) async
+  Future<void> createAccount(String uid,String username,String displayName,Gender gender,DateTime dateOfBirth) async
   {
-    try {
-      await _firestore.collection('users').document(user.sharableUserInfo.id).setData(user.sharableUserInfo.sharableUserInfoToMap()).then((result) {
-        print("A document for your user has been created");
-      }).catchError((error) {
-        print("Error" + error.toString());
-      });
-      await addUsername(user.sharableUserInfo.id,user.sharableUserInfo.displayName, user.sharableUserInfo.username).then((_){
-        print('user name added');
-      });
-      await setToken(user.sharableUserInfo.id);
-    }
-    catch (e) {
-      print(e.code);
-    }
+    print('++++++'+(await userNameExists(username)).toString());
+    print('uid : $uid , username : $username , displayname : $displayName , Gender : $gender , data : $dateOfBirth');
+    FirebaseMessaging _firebaseMessaging = FirebaseMessaging ();
+    String fcmToken = await _firebaseMessaging.getToken();
+    print(fcmToken);
+        WriteBatch writeBatch = _firestore.batch();
+        DocumentReference usernameDoc = _firestore.collection('usernames').document(username);
+        writeBatch.setData(usernameDoc, usernameMap(uid,displayName));
+        writeBatch.setData(_firestore.collection('users').document(uid),{
+          'UID' : uid,
+          //'Displayname' : _displayName ,
+          'Username' : username,
+          'Photo' : false,
+          'Active' : true ,
+          'Gender' : gender.toString(),
+          'DateOfBirth' : Timestamp.fromDate(dateOfBirth),
+          'Online' : true,
+        });
+        writeBatch.setData(_firestore.collection('users').document(uid).collection('tokens').document(fcmToken), {
+          'token': fcmToken,
+          'createdAt': FieldValue.serverTimestamp(), // optional
+        });
+        print('writiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiing');
+        await writeBatch.commit();
   }
   Future<void> setToken (String uid) async {
     FirebaseMessaging _firebaseMessaging = FirebaseMessaging ();
@@ -63,30 +72,19 @@ class FirestoreService {
   }
   Future<SharableUserInfo> getUserInfo(String id) async
   {
-    try{
-      SharableUserInfo u;
       Map<String,dynamic> data;
       Map<String,dynamic> publicData;
       DocumentSnapshot documentSnapshot = await _firestore.collection("users").document(id).get();
-      if (documentSnapshot.exists){
-          data = documentSnapshot.data;
-          publicData = await getPublicInfo(data['Username']);
-          data.addAll(publicData);
-          print(data);
-          await setToken (id);
-          u = SharableUserInfo.fromMap(id,data);
+      if (documentSnapshot.exists) {
+        data = documentSnapshot.data;
+        publicData = await getPublicInfo(data['Username']);
+        data.addAll(publicData);
+        print(data);
+        //await setToken(id);
+        return SharableUserInfo.fromMap(id, data);
       }
       else
-      {
-        print('Couldn\'t find user\'s data');
-        u = null;
-      }
-      return u;
-    }
-    catch(e){
-      print('error while getting user info'+e.toString());
-      return null;
-    }
+        throw CouldNotFoundUserData () ;
   }
 
   Future<Map<String,dynamic>> getPublicInfo(String username) async
@@ -95,17 +93,12 @@ class FirestoreService {
     DocumentSnapshot publicDocumentSnapshot = await _firestore.collection('usernames').document(username).get();
     if (publicDocumentSnapshot.exists){
       publicData = publicDocumentSnapshot.data;
+      return publicData;
     }
     else
-    {
-      print('Couldn\'t find public user\'s data');
-    }
-    return publicData;
+      throw CouldNotFoundUserData () ;
   }
-  //Affichage des information
-  void afficher(String uid){
 
-  }
 
   Future<void> addToGroupe (String gid,String uid) async {
     WriteBatch batch = _firestore.batch();
@@ -304,29 +297,27 @@ class FirestoreService {
   }
    Future<bool> userNameExists (String username) async {
         DocumentSnapshot snapshot = await _firestore.collection('usernames').document(username).get() ;
-        return snapshot.exists ;
+        print(snapshot.exists) ;
+        return snapshot.exists  ;
   }
 
   Future<void> addUsername (String uid,String displayName,String username)async {
-    DocumentReference usernameDoc = _firestore.collection('usernames').document(username);
-    if (!await userNameExists(username)){
-      usernameDoc.setData(usernameMap(uid,displayName));
+    /*if (!await userNameExists(username)){
+      await usernameDoc.setData(usernameMap(uid,displayName));
     }
     else
-      throw UsenameExistsException();
-
-    /*_firestore.runTransaction( (transaction){
-      // DocumentSnapshot documentSnapshot = await
-      transaction.get(usernameDoc).then((documentSnapshot){
+      throw UsernameExistsException();*/
+    _firestore.runTransaction( (transaction){
+      DocumentReference usernameDoc = _firestore.collection('usernames').document(username);
+      return transaction.get(usernameDoc).then((documentSnapshot) async {
         if(documentSnapshot.exists)
-          throw UsenameExistsException();
+          throw UsernameExistsException();
         else{
-          await usernameDoc.setData(usernameMap(uid,displayName));
+          await transaction.set(usernameDoc, usernameMap(uid,displayName));
+          print('username added');
         }
       });
-      return null;
-    });*/
-
+    });
   }
   //----------------------------Invitation codes--------------------------------------------
   Future<String> getGroupID (String code) async {
@@ -336,7 +327,7 @@ class FirestoreService {
     else
       return null;
   }
-  Future<String> addInvitationCode (String gid) async {
+  Future<void> addInvitationCode (String gid) async {
     String code =  generateCode () ;
     /*DocumentReference invitationCodeDoc = _firestore.collection('invitationCodes').document(code);
     if (await getGroupID(code)==null) {
@@ -347,7 +338,7 @@ class FirestoreService {
     }
     else
       throw CodeExistsException();*/
-    _firestore.runTransaction( (transaction){
+    await _firestore.runTransaction( (transaction){
       DocumentReference invitationCodeDoc = _firestore.collection('invitationCodes').document(code);
       return transaction.get(invitationCodeDoc).then((documentSnapshot){
         if(documentSnapshot.exists)
@@ -400,13 +391,18 @@ class FirestoreService {
     return Timestamp.fromDate(date);
   }
 }
-class UsenameExistsException implements Exception {
+class UsernameExistsException implements Exception {
   String _code ;
-  UsenameExistsException(){this._code = 'USERNAME_EXISTS';}
+  UsernameExistsException(){this._code = 'USERNAME_EXISTS';}
   String get code => _code;
 }
 class CodeExistsException implements Exception {
   String _code ;
   CodeExistsException(){this._code = 'INVITATION_CODE_EXISTS';}
+  String get code => _code;
+}
+class CouldNotFoundUserData implements Exception {
+  String _code ;
+  CouldNotFoundUserData(){this._code = 'USEDATA_NOT_FOUND';}
   String get code => _code;
 }

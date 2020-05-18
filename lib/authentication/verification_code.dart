@@ -39,18 +39,22 @@ class _VerifyState extends State<Verify> {
       print(e);
     }
   }
+  Future<void> linkPhone () async {
+    if(await widget.servicesAuth.isSignedIn()){
+    await widget.servicesAuth.linkPhoneNumber(widget.phoneNumber ,  _smsCode).then((_)=>print('---done---'));
+    await  _utilisateur.setPhone(widget.phoneNumber);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> transition())) ;
+    }
+    else{
+    Utilisateur utilisateur = await widget.servicesAuth.signInPhone(_smsCode);
+    Provider.of<User>(context, listen: false).setUtilisateur(utilisateur);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> MotPagePhone())) ;
+    }
+  }
   Future<void> _verify () async {
     _smsCode = concatinate();
     try{
-      if(await widget.servicesAuth.isSignedIn()){
-        await widget.servicesAuth.linkPhoneNumber(widget.phoneNumber, _utilisateur, _smsCode).then((_)=>print('---done---'));
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> transition())) ;
-      }
-      else{
-        Utilisateur utilisateur = await widget.servicesAuth.signInPhone(_smsCode);
-        Provider.of<User>(context, listen: false).setUtilisateur(utilisateur);
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> MotPagePhone())) ;
-      }
+      await linkPhone();
     }
     catch(error){
       print(error.code);
@@ -63,10 +67,21 @@ class _VerifyState extends State<Verify> {
           break ;
         case 'ERROR_SESSION_EXPIRED' :
           print('ERROR_SESSION_EXPIRED');
+          if (widget.servicesAuth.phoneVerified){
+            await linkPhone() ;
+          }
+          else {
+            showDialog(
+              context: context,
+              builder: (context) => errorDialog(context, 'Session expired : renvoyer le code.') ,
+            );
+          }
+        /*case 'ERROR_SESSION_EXPIRED' :
+          print('ERROR_SESSION_EXPIRED');
           showDialog(
             context: context,
-            builder: (context) => errorDialog(context, 'Session expired : renvoyer le code.') ,
-          );
+            builder: (context) => errorDialog(context, 'Phone number in use : this phone number is used for another account please use another.') ,
+          );*/
           break ;
         default :
           break ;
@@ -157,7 +172,7 @@ class _VerifyState extends State<Verify> {
                                   color:Color(0xFFF1B97A),
                                 ),
                               ),
-                              onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Send())) ;},
+                              onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Send(phoneNumber: widget.phoneNumber,))) ;},
                             ),
                             SizedBox(
                               width: 20.0,

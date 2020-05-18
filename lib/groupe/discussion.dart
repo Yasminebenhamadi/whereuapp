@@ -44,7 +44,6 @@ class _ChatState extends State<chat> {
                 }
                 catch (e){
                 }
-
               }),
           Expanded(
               child: TextField(
@@ -281,17 +280,20 @@ class _ChatState extends State<chat> {
     return FutureBuilder<FileImage>(
         future: _storageService.photoMessage(photoPath),
         builder: (context,asyncSnapshot){
-            return Container(
-              color: Color(0xff739D84),
-              child: Center(
-                child: Image(
-                  height: 30.0,
-                  width: 30.0,
-                  image: asyncSnapshot.data,
+            if(!asyncSnapshot.hasError){
+              return Container(
+                color: Color(0xff739D84),
+                child: Expanded(
+                  child: Image(
+                    image: asyncSnapshot.data,
+                  ),
                 ),
-              ),
-            );
-          }
+              );
+            }
+            else
+              return Text ('Loading image') ;
+            }
+
     ) ;
   }
   Widget _buildMessage(Message message){

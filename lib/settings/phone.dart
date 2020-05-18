@@ -1,13 +1,7 @@
-import 'package:country_currency_pickers/country.dart';
-import 'package:country_currency_pickers/currency_picker_dropdown.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:country_pickers/country.dart';
 import 'package:flutter/material.dart';
-import 'package:country_currency_pickers/country_pickers.dart';
-import 'package:whereuapp/authentication/Inscription.dart';
+import 'package:country_pickers/country_pickers.dart';
 import 'package:whereuapp/authentication/send_code.dart';
-import 'package:whereuapp/settings/compte.dart';
-
-
 
 class PhonePage extends StatefulWidget {
   @override
@@ -15,9 +9,9 @@ class PhonePage extends StatefulWidget {
 }
 
 class _PhonePageState extends State<PhonePage> {
-  final formkey = GlobalKey <FormState>();
+  final formKey = GlobalKey<FormState>();
   String phoneNumber;
-  Country country = Country ();
+  Country country ;
   String _validatePhoneNumber(String value){
     final phoneExp = RegExp(r'^(?:[+0]9)?[0-9]{10}$');
     if (!phoneExp.hasMatch(value)) {
@@ -28,190 +22,111 @@ class _PhonePageState extends State<PhonePage> {
       return'VEUILLEZ ENTRER UN NUMERO SVP';
 
     }return null ;  }
+  Widget _text() {
+    return Positioned(
+      top: 200,
+      child: Container(
+        margin: EdgeInsets.all(20),
+        height: 200,
+        width: MediaQuery.of(context).size.width * 0.90,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 10.0,
+                offset: new Offset(10.0, 10.0),
+              )
+            ]),
+          child: Column (
+            children: <Widget>[
+              SizedBox( height:25.0),
+              Row( children: <Widget>[
 
-  Widget _buildCurrencyDropdownItem(Country country) => Container(
+                SizedBox( width: 5.0),
+                Expanded(
+                  child: CountryPickerDropdown(
+                    initialValue:('DZ'),
+                    itemBuilder: _buildDropdownItem,
+                    onValuePicked: (Country country) {
+                      this.country = country;
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: Form(
+                    key: formKey,
+                    child: TextFormField(
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xff739D84))),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.orange)),
+                        hintText: " téléphone",
+                        hintStyle:TextStyle(color:Color(0xff739D84), fontSize: 18.0),
+                      ),
+                      onSaved: (value) {
+                        phoneNumber = value ;
+                      },
+                      validator: _validatePhoneNumber,
+                    ),
+                  ),
+                ),
+              ],
+              ),
+              SizedBox( height : 20.0),
+              FlatButton(
+                onPressed: (){
+                  if (formKey.currentState.validate()){
+                    formKey.currentState.save();
+                    String phone;
+                    if (country!=null)
+                      phone = '+'+country.phoneCode+' '+phoneNumber;
+                    else
+                      phone = '+213 '+phoneNumber;
+                    print(phone);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Send(phoneNumber: phone,)));
+                  }
+                },
+                child: Text('Enregistrer', style : TextStyle(fontSize:18.0)),
+                color: Color(0xFFF1B97A),
+                shape:RoundedRectangleBorder(borderRadius:BorderRadius.circular(30.0),),
+                textColor: Colors.white,
+              )
+
+            ],
+          ),
+      ),
+    );
+  }
+
+  Widget _buildDropdownItem(Country country) => Container(
     child: Row(
       children: <Widget>[
         CountryPickerUtils.getDefaultFlagImage(country),
         SizedBox(
-          width: 8.0,
+          width: 4.0,
         ),
-        Text("${country.currencyCode}"),
+        Text("+${country.phoneCode}(${country.isoCode})"),
       ],
     ),
   );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage("assets/images/mer.jpeg"), fit: BoxFit.cover)),
-          ),Center(
-            child:new Container(
-              height: 300.00,
-              width: 380.00,
-              /*alignment:Alignment.*/
-              decoration: BoxDecoration(
-                color: Color(0xfff2e9db).withAlpha(100),
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset(24.00,24.00),
-                    color: Color(0xffd9cebf).withAlpha(40),
-                    blurRadius: 42,
-                  ),
-                ], borderRadius: BorderRadius.circular(50.00),
-              ),
+      backgroundColor:Color(0xffF2E9DB),
+      body: SingleChildScrollView(
+        child: Stack(
+          children: <Widget>[
+            Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
             ),
-          ),
-          Container(
-            child : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Text(
-                  "Changer votre numéro de téléphone ?",
-                  style: TextStyle(
-                    fontFamily: "Segoe UI",fontWeight: FontWeight.w700,
-                    fontSize: 23,
-                    color:Color(0xffffffff),
-                    shadows:[
-                      Shadow(
-                        offset: Offset(0.00,3.00),
-                        color: Color(0xFFE8652D),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),textAlign:TextAlign.center,
-                ),
-                SizedBox(
-                  height:  25.0,
-                ),
-                Form(
-                  key : formkey,
-                  child:Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Center( child:  Container(
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 6.0,
-                              offset: Offset(0,2 ),
-                            ),
-                          ],),
-                        height: 60.0,
-                        width: 340,
-                        child:
-                        Row(
-                          children: <Widget>[
-                            SizedBox(width: 30,),
-                            Expanded(
-                              child: Container(
-
-                                child : CurrencyPickerDropdown(
-                                  initialValue: 'DZD',
-                                  itemBuilder: _buildCurrencyDropdownItem,
-                                  onValuePicked: (Country country) {
-                                    this.country = country ;
-                                    print("${country.name}");
-                                  },
-                                ),
-                              ),),
-                            SizedBox( width:10.0),
-                            Expanded(
-                              child: TextFormField(keyboardType: TextInputType.phone,
-                                style: TextStyle(
-                                    color:Color(0xff739D84)  ),
-                                decoration: InputDecoration(
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide.none,),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide.none,),
-                                    hintText: "Téléphone",
-                                    hintStyle: TextStyle(
-                                      color: Color(0xff739D84),
-                                      letterSpacing: 1.5,
-                                      fontSize: 18.0,
-                                    )),
-                                validator:_validatePhoneNumber,
-                                onSaved: ( String val){phoneNumber = val; },
-                                textAlign:TextAlign.center,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      ),
-                      SizedBox(height: 25.0,),
-                      Center( child:
-                       Container(
-                        padding: EdgeInsets.symmetric(vertical: 25.0),
-
-                        width: 250,
-                        child: RaisedButton(
-                          elevation: 10.0,
-                          onPressed: (){
-                            if (formkey.currentState.validate()){
-                              formkey.currentState.save();
-                              String phone;
-                              if (country!=null)
-                                phone = '+'+country.phoneCode+' '+phoneNumber;
-                              else
-                                phone = '+213 '+phoneNumber;
-                              print(phone);
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Send(phoneNumber: phone,)));
-                            }
-                          },
-                          padding: EdgeInsets.all(15.0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          color: Color(0xFFF1B97A),
-                          child: Text(
-                            'Enregistrer',
-                            style: TextStyle(
-                              color: Color(0xFFE8652D),
-                              letterSpacing: 1.5,
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      ),
-                    ],
-                  ),
-
-                ),
-              ],
-            ),
-
-          ),
-          Container(
-            alignment: Alignment.bottomCenter,
-            width: 250.0,
-            child:  FlatButton(
-              child:
-              Text("Annuler",
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  color:Color(0xFFF1B97A),
-                ),
-              ),
-              onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> SettingsOnePage())) ;},
-            ),
-          ),
-        ],
+            _text(),
+          ],
+        ),
       ),
     );
   }

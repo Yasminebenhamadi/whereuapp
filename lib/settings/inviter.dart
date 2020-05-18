@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:whereuapp/Wrapper.dart';
 import 'package:whereuapp/classes/Groupe.dart';
+import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
 class InvitePage extends StatefulWidget {
-  final Group group ;
-  InvitePage({this.group});
+  /*final Group group ;
+  final Widget previous ;
+  InvitePage({this.group,this.previous});*/
   @override
   _InvitePageState createState() => _InvitePageState();
 }
@@ -12,8 +15,8 @@ class InvitePage extends StatefulWidget {
 class _InvitePageState extends State<InvitePage> {
 
   final formkey = GlobalKey <FormState>();
-
-  Widget _avatar() {
+  Group group ;
+  /*Widget _avatar() {
     return Positioned( child : Row ( children:<Widget> [
       SizedBox( width :80.0),
       Image(   image: AssetImage("send.png"),
@@ -22,7 +25,7 @@ class _InvitePageState extends State<InvitePage> {
     ]
     ),
     );
-  }
+  }*/
 
   Widget _code() {
     return Positioned(
@@ -54,14 +57,14 @@ class _InvitePageState extends State<InvitePage> {
                   child : Image(   image: AssetImage("groupe.png"),height: 300, width: 300,)
                 ),),
               Text(
-                widget.group.nom,
+                group.nom,
                 style: TextStyle(
                     fontSize: 25.0,
                     fontWeight: FontWeight.bold,
                     color: Color(0xff739D84)),
                 textAlign: TextAlign.center,),
               SizedBox( height: 30.0),
-              TextField(  enabled :false , textAlign : TextAlign.center, decoration: InputDecoration(border :InputBorder.none,  hintText:widget.group.code , hintStyle: TextStyle(
+              TextField(  enabled :false , textAlign : TextAlign.center, decoration: InputDecoration(border :InputBorder.none,  hintText:group.code , hintStyle: TextStyle(
                   fontSize:40.0,
                   fontWeight: FontWeight.bold,
                   color: Color(0xffE8652D))
@@ -80,7 +83,7 @@ class _InvitePageState extends State<InvitePage> {
         SizedBox( height:20.0),
         Row( children:<Widget> [
           RaisedButton(
-            onPressed:() => Share.share(widget.group.code),
+            onPressed:() => Share.share(group.code),
             padding :EdgeInsets.all(15.0),
             child: Text("  Partager le code d'invitation  ", style : TextStyle(fontSize:18.0,fontWeight:FontWeight.bold)),
             color:  Color(0xffE8652D),
@@ -94,8 +97,11 @@ class _InvitePageState extends State<InvitePage> {
       ),
     );
   }
-
-
+  @override
+  void initState() {
+    super.initState();
+    group = Provider.of<User>(context).group;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,6 +139,6 @@ class _InvitePageState extends State<InvitePage> {
     );
   }
   moveToLastSreen() {
-    Navigator.pop(context);
+      Navigator.pop(context);
   }
 }

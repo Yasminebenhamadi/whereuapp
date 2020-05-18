@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:whereuapp/classes/Groupe.dart';
 import 'package:whereuapp/classes/Request.dart';
 import 'package:whereuapp/classes/TimePlace.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:whereuapp/classes/Message.dart';
 import 'package:whereuapp/classes/SharableUserInfo.dart';
@@ -188,7 +189,7 @@ class Utilisateur {
   }
 
   //---------------------------------------BatteryLevel------------------------------------------------
-  /*void setBatteryLevel () async {
+  void setBatteryLevel () async {
     while (true) {//_deviceInfoService.getBatteryLevel) {
       int bl = await _deviceInfoService.batteryLevel();
       this._usersInfoDoc.updateData({
@@ -198,7 +199,7 @@ class Utilisateur {
       });
       await Future.delayed(Duration(minutes: 1));
     }
-  }*/
+  }
 
   void removeBatteryLevel () async {
     //_deviceInfoService.getBatteryLevel = false ;

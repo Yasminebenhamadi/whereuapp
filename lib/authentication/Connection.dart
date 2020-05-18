@@ -36,10 +36,15 @@ class _ConnectionState  extends State<Connection > {
       form.save();
       try {
         utilisateur = await _loginCommand();
+        print('hiiiiiiiii');
         Provider.of<User>(context, listen: false).setUtilisateur(utilisateur);
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePages_2 ()));
+        /*if (utilisateur.sharableUserInfo.phone == null )
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Phone ()));
+        else*/
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePages_2 ()));
       }
       catch (e) {
+        print(e.code);
         switch (e.code){
           case 'ERROR_USER_NOT_FOUND' :
             {

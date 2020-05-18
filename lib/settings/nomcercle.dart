@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:whereuapp/Wrapper.dart';
 import 'package:whereuapp/classes/Groupe.dart';
 import 'package:whereuapp/servises/storage.dart';
+import 'package:provider/provider.dart';
 
 class NamecerclePage extends StatefulWidget {
-  final Group group ;
-  NamecerclePage({this.group});
+  /*final Group group ;
+  final Widget previous ;
+  NamecerclePage({this.group,this.previous});*/
   @override
   _NamecerclePageState createState() => _NamecerclePageState();
 }
@@ -16,6 +19,8 @@ class _NamecerclePageState extends State<NamecerclePage> {
   final StorageService _storageService = StorageService();
   File groupsPhoto;
   String nom ;
+  Group group ;
+
   Widget _image() {
 
     return Center(child :
@@ -30,7 +35,7 @@ class _NamecerclePageState extends State<NamecerclePage> {
               offset:new Offset(0.0,10.0),) ]),
 
         child: FutureBuilder(
-          future : _storageService.groupsImage(widget.group.photo, widget.group.groupPhoto),
+          future : _storageService.groupsImage(group.photo, group.groupPhoto),
           builder: (context,asyncSnapshot) {
             ImageProvider image = asyncSnapshot.data ;
             return CircleAvatar(
@@ -106,10 +111,10 @@ class _NamecerclePageState extends State<NamecerclePage> {
                   onPressed: () {
                     formKey.currentState.save();
                     if(nom!=null && nom!=''){
-                      widget.group.setNom(nom);
+                      group.setNom(nom);
                     }
                     if(groupsPhoto!=null){
-                      widget.group.setPhoto(groupsPhoto);
+                      group.setPhoto(groupsPhoto);
                     }
                   },
                     padding: EdgeInsets.all(15.0),
@@ -127,7 +132,11 @@ class _NamecerclePageState extends State<NamecerclePage> {
         ),
       );
   }
-
+  @override
+  void initState() {
+     super.initState();
+     group = Provider.of<User>(context).group;
+  }
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -169,7 +178,7 @@ class _NamecerclePageState extends State<NamecerclePage> {
           ),
         ));
   }
-  moveToLastSreen(){
-    Navigator.pop(context) ;
+  moveToLastSreen() {
+      Navigator.pop(context);
   }
 }

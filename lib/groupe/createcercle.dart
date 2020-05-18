@@ -8,6 +8,7 @@ import 'package:whereuapp/groupe/cercle.dart';
 import 'package:whereuapp/groupe/code.dart';
 import 'package:whereuapp/servises/firestore.dart';
 import 'package:whereuapp/servises/storage.dart';
+import 'package:whereuapp/unknownError.dart';
 import 'package:provider/provider.dart';
 
 class CreatePage extends StatefulWidget {
@@ -123,9 +124,17 @@ class _CreatePageState extends State<CreatePage> {
           RaisedButton(
             onPressed: () async {
               if(formKey.currentState.validate()){
-                await ajouterGroupe().then((group){
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> code (group: group))) ;
-                });
+                try {
+                  await ajouterGroupe().then((group){
+                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> code (group: group))) ;
+                                  });
+                } catch (e) {
+                  print(e);
+                  showDialog(
+                      context: context ,
+                      builder: (context) => unknownError(context) ,
+                  );
+                }
               }
            },
             padding :EdgeInsets.all(15.0),

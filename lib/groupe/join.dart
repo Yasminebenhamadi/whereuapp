@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:whereuapp/Wrapper.dart';
 import 'package:whereuapp/classes/SharableUserInfo.dart';
 import 'package:whereuapp/classes/Utilisateur.dart';
+import 'package:whereuapp/home/home_page_2.dart';
 import 'package:whereuapp/servises/firestore.dart';
 import 'package:whereuapp/servises/storage.dart';
 import 'package:whereuapp/settings/cercles_user.dart';
+import 'package:whereuapp/unknownError.dart';
 import 'package:provider/provider.dart';
 
 // ignore: camel_case_types
@@ -136,9 +138,15 @@ class _JoinConfirmeState extends State<JoinConfirme> {
               width: 250.0,
               child: RaisedButton(
                 elevation: 5.0,
-                onPressed: () {
-                  _firestoreService.addToGroupe(widget.groupInfo.documentID, utilisateur.sharableUserInfo.id);
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> cercleUser())) ;
+                onPressed: () async {
+                  try {
+                    await _firestoreService.addToGroupe(widget.groupInfo.documentID, utilisateur.sharableUserInfo.id);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> cercleUser())) ;
+                  }
+                  catch (e){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> unknownError(context))) ;
+                  }
+
                   },
                 padding: EdgeInsets.all(15.0),
                 shape: RoundedRectangleBorder(
@@ -166,7 +174,7 @@ class _JoinConfirmeState extends State<JoinConfirme> {
                     color:Color(0xFFF1B97A),
                   ),
                 ),
-                onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> cercleUser())) ;},
+                onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePages_2())) ;},
               ),
             ),
           ],

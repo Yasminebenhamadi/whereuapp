@@ -2,14 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_radio_button_group/flutter_radio_button_group.dart';
 import 'package:flutter/material.dart';
 import 'package:whereuapp/classes/Groupe.dart';
+import 'package:whereuapp/Wrapper.dart';
+import 'package:provider/provider.dart';
 class RadioButtonExample extends StatefulWidget {
-  final Group group ;
-  RadioButtonExample({this.group});
+  /*final Group group ;
+  final Widget previous ;
+  RadioButtonExample({this.group,this.previous});*/
   @override
   _RadioButtonExampleState createState() => _RadioButtonExampleState();
 }
 
 class _RadioButtonExampleState extends State<RadioButtonExample> {
+  Group group ;
+  @override
+  void initState() {
+    super.initState();
+    group = Provider.of<User>(context).group;
+  }
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -56,16 +65,16 @@ class _RadioButtonExampleState extends State<RadioButtonExample> {
                 onSelected: (String selected) {
                   switch (selected) {
                   case 'Famille' :
-                    widget.group.setType(TypeGroupe.Family);
+                      group.setType(TypeGroupe.Family);
                       break;
                   case "Amis" :
-                    widget.group.setType(TypeGroupe.Friends);
+                      group.setType(TypeGroupe.Friends);
                     break;
                   case "Travail" :
-                    widget.group.setType(TypeGroupe.Work);
+                    group.setType(TypeGroupe.Work);
                     break;
                   case "Autre" :
-                    widget.group.setType(TypeGroupe.Other);
+                    group.setType(TypeGroupe.Other);
                     break;
                     default :
                       break;
@@ -77,7 +86,7 @@ class _RadioButtonExampleState extends State<RadioButtonExample> {
       )
     );
   }
-  moveToLastSreen(){
-    Navigator.pop(context) ;
+  moveToLastSreen() {
+      Navigator.pop(context);
   }
 }

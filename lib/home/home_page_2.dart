@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:core';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:whereuapp/classes/Message.dart';
 import 'package:whereuapp/groupe/discussion.dart';
 import 'package:whereuapp/servises/firestore.dart';
 import 'package:whereuapp/servises/storage.dart';
@@ -50,7 +52,6 @@ class _MyHomePageState_2 extends State<HomePages_2> {
   final String buttonTitle="";
   GoogleMapController mapController;
   final Set<Marker> _markers = {};
-
   final Set<Polyline> _polyline = {};
 
   static LatLng _initialPosition;
@@ -93,8 +94,23 @@ class _MyHomePageState_2 extends State<HomePages_2> {
     });
   }
 
-  int _selectedTabIndex = 0;
-  Widget _build_Nav_Bar ()
+  Future<void> setAlertListener (){
+    Firestore.instance.collectionGroup('Discussion').where('ShowTo', arrayContains: user.sharableUserInfo.id)
+        .where('Type' , isEqualTo: 'TypeMessage.Alert').snapshots()
+        .listen((querySnapshot){
+      querySnapshot.documentChanges.forEach((documentChange){
+        if(documentChange.type == DocumentChangeType.added){
+              Message alert = Message.from(documentChange.document.documentID, documentChange.document.data);
+              showDialog(
+                  context: context,
+                  builder: (context) => alertMessage(context,alert) ,
+              );
+        }
+      });
+    });
+  }
+  List<Widget> pages ;
+  /*Widget _build_Nav_Bar ()
   {
     return Positioned(
       bottom: 0,
@@ -157,202 +173,235 @@ class _MyHomePageState_2 extends State<HomePages_2> {
         ],
       ),
     );
-  }
+  }*/
 
   @override
   void initState() {
     super.initState();
     setCustomMapPin();
     cloc();
-    on_sync_coutton_pressed();
+
+    //on_sync_coutton_pressed();
   }
   Widget messaging (){
     return selectedGroup == null ? cercleUser() : chat(group: selectedGroup,);
   }
-  Widget body ;
-
-  @override
-  Widget build(BuildContext context) {
-    setState(() {
-      user = Provider
-          .of<User>(context)
-          .utilisateur;
-    });
-    return Scaffold(
-
-
-      body:  Stack(
-        //fit: StackFit.expand,
-        children: <Widget>[
-          GoogleMap(
-            compassEnabled: true,
-            tiltGesturesEnabled: false,
-            mapType:_currentMapType,
-            initialCameraPosition: initialLocation,
-            markers: _markers,
-            polylines: _polyline,
-            onMapCreated: (GoogleMapController controller) {
-              mapController = controller;
+  Widget map (){
+    return Stack(
+      //fit: StackFit.expand,
+      children: <Widget>[
+        GoogleMap(
+          compassEnabled: true,
+          tiltGesturesEnabled: false,
+          mapType:_currentMapType,
+          initialCameraPosition: initialLocation,
+          markers: _markers,
+          polylines: _polyline,
+          onMapCreated: (GoogleMapController controller) {
+            mapController = controller;
+          },
+        ),
+        Positioned(
+          child: GestureDetector(
+            onTap: () { Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SourceDestination_grp (selectedGroup , Provider.of<User>(context).utilisateur  )));
             },
-          ),
-          Positioned(
-            child: GestureDetector(
-              onTap: () { Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SourceDestination_grp (selectedGroup , Provider.of<User>(context).utilisateur  )));
-              },
-              child: Container(
-                height: 45,
-                decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.teal,
+            child: Container(
+              height: 45,
+              decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.teal,
 
-                  Colors.teal[200],], begin: Alignment.topLeft, end: Alignment.bottomRight,),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [BoxShadow(color: Colors.black12, offset: Offset(5, 5), blurRadius: 10,)],), child: Center(child: Text('Commencons un trajet ensemble', style: TextStyle(
-                color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500,),),),),), bottom: 85, right: 60, left: 60,),
-          Positioned(
-            child: GestureDetector(
-              onTap: () { on_sync_coutton_pressed() ;},
-              child: Container(
-                height: 45,
-                decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xffe8652d) , Color(0xfff2e9db),], begin: Alignment.topLeft, end: Alignment.bottomRight,),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [BoxShadow(color: Colors.black12, offset: Offset(5, 5), blurRadius: 10,)],), child: Center(child: Text('La position des autres membres', style: TextStyle(
-                color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500,),),),),), bottom: 140, right: 60, left: 60,),
+                Colors.teal[200],], begin: Alignment.topLeft, end: Alignment.bottomRight,),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [BoxShadow(color: Colors.black12, offset: Offset(5, 5), blurRadius: 10,)],), child: Center(child: Text('Commencons un trajet ensemble', style: TextStyle(
+              color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500,),),),),), bottom: 85, right: 60, left: 60,),
+        Positioned(
+          child: GestureDetector(
+            onTap: () { on_sync_coutton_pressed() ;},
+            child: Container(
+              height: 45,
+              decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xffe8652d) , Color(0xfff2e9db),], begin: Alignment.topLeft, end: Alignment.bottomRight,),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [BoxShadow(color: Colors.black12, offset: Offset(5, 5), blurRadius: 10,)],), child: Center(child: Text('La position des autres membres', style: TextStyle(
+              color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500,),),),),), bottom: 140, right: 60, left: 60,),
 
 
 
-          DirectSelectContainer(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  verticalDirection: VerticalDirection.down,
-                  children: <Widget>[
+        DirectSelectContainer(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                verticalDirection: VerticalDirection.down,
+                children: <Widget>[
 
-                    Padding(
-                      padding: const EdgeInsets.only(left:45.0,right:45,),
-                      child: Column(
-                        children: <Widget>[
-                          //---------------------------------------GroupSelector------------------------------------------------------
-                          FutureBuilder<List<GroupHeader>>(
-                              future: Provider.of<User>(context).utilisateur.getUsersGroupsHeaders(),
-                              builder: (buildContext,asyncSnapshot)
-                              {
-                                if (asyncSnapshot.hasError){
-                                  return Center(child: Text('Something went wrong'));
-                                }
-                                else if (!asyncSnapshot.hasData){
-                                  return Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                                else  {
-                                  List<GroupHeader> groups = asyncSnapshot.data ;
-                                  return Column(
-                                    children: [
-                                      Padding(
-                                        padding: buttonPadding,
-                                        child: Container(
-                                          decoration: _getShadowDecoration(),
-                                          child: Card(
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: <Widget>[
-                                                  Expanded(
-                                                      child: Padding(
-                                                          child: DirectSelectList<GroupHeader>(
-                                                            values: groups,
-                                                            defaultItemIndex: 0,
-                                                            onItemSelectedListener: (groupHeader, int, context) async {
-                                                              try {
-                                                                Group group = await _firestoreService.getGroupInfo(groupHeader.gid);
-
-
-                                                                setState(() {
-                                                                  selectedGroup = group ;
-                                                                });
-                                                              } catch (e) {
-                                                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> unknownError (context)));
-                                                                print(e);
-                                                              }
-                                                            },
-                                                            itemBuilder: (GroupHeader value) => getDropDownMenuItem(value), focusedItemDecoration: _getDslDecoration(),
-                                                          ),
-                                                          padding: EdgeInsets.only(left:12 )
-                                                      )
-                                                  ),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(right: 8),
-                                                    child: _getDropdownIcon(),
-                                                  )
-                                                ],
-                                              )),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }
+                  Padding(
+                    padding: const EdgeInsets.only(left:45.0,right:45,),
+                    child: Column(
+                      children: <Widget>[
+                        //---------------------------------------GroupSelector------------------------------------------------------
+                        FutureBuilder<List<GroupHeader>>(
+                            future: Provider.of<User>(context).utilisateur.getUsersGroupsHeaders(),
+                            builder: (buildContext,asyncSnapshot)
+                            {
+                              if (asyncSnapshot.hasError){
+                                return Center(child: Text('Something went wrong'));
                               }
-                          ),
-                          //----------------------------------------------------------------------------------------------------------
-                          SizedBox(height: 20.0),
-                          SizedBox(height: 15.0),
-                        ],
-                      ),
+                              else if (!asyncSnapshot.hasData){
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              else  {
+                                List<GroupHeader> groups = asyncSnapshot.data ;
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: buttonPadding,
+                                      child: Container(
+                                        decoration: _getShadowDecoration(),
+                                        child: Card(
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: <Widget>[
+                                                Expanded(
+                                                    child: Padding(
+                                                        child: DirectSelectList<GroupHeader>(
+                                                          values: groups,
+                                                          defaultItemIndex: 0,
+                                                          onItemSelectedListener: (groupHeader, int, context) async {
+                                                            try {
+                                                              Group group = await _firestoreService.getGroupInfo(groupHeader.gid);
+
+
+                                                              setState(() {
+                                                                selectedGroup = group ;
+                                                              });
+                                                            } catch (e) {
+                                                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> unknownError (context)));
+                                                              print(e);
+                                                            }
+                                                          },
+                                                          itemBuilder: (GroupHeader value) => getDropDownMenuItem(value), focusedItemDecoration: _getDslDecoration(),
+                                                        ),
+                                                        padding: EdgeInsets.only(left:12 )
+                                                    )
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.only(right: 8),
+                                                  child: _getDropdownIcon(),
+                                                )
+                                              ],
+                                            )),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                            }
+                        ),
+                        //----------------------------------------------------------------------------------------------------------
+                        SizedBox(height: 20.0),
+                        SizedBox(height: 15.0),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-          Positioned(
-            right: 10,
-            bottom: 240,
-            child: Column(children: <Widget>[
+        ),
+        Positioned(
+          right: 10,
+          bottom: 240,
+          child: Column(children: <Widget>[
 
 
 
-              button(_segeolocaliser, Icons.my_location, Color(0xfff2e9db),
-                  Color(0xffe8652d),"btn3"),
-              SizedBox(height: 10),
-              button(_onMapTypeButtonPressed, Icons.filter_none, Color(0xfff2e9db),
-                  Color(0xffe8652d),"btn2"),
-              SizedBox(height: 10),
-              button((){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => s_d1()));} ,Icons.navigation, Color(0xfff2e9db),
-                  Color(0xffe8652d),"btn4"),
+            button(_segeolocaliser, Icons.my_location, Color(0xfff2e9db),
+                Color(0xffe8652d),"btn3"),
+            SizedBox(height: 10),
+            button(_onMapTypeButtonPressed, Icons.filter_none, Color(0xfff2e9db),
+                Color(0xffe8652d),"btn2"),
+            SizedBox(height: 10),
+            button((){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => s_d1()));} ,Icons.navigation, Color(0xfff2e9db),
+                Color(0xffe8652d),"btn4"),
 
-              SizedBox(height: 10),
+            SizedBox(height: 10),
 
-            ]),
-          ),
-          Positioned(
-            top:44,
-            left:5,
-            child:button(()async {
-              // show input autocomplete with selected mode
-              // then get the Prediction selected
-              Prediction p = await PlacesAutocomplete.show(
-                context: context,
-                mode: Mode.overlay,
-                apiKey: "AIzaSyCN5CJGsvRnutmMNhpN8toEprd3fn7cIBg",
-              );
-              displayPrediction(p);
-            }, Icons.search, Color(0xfff2e9db), Color(0xffe8652d),"btn1"),
-          ),
-          Positioned(
-            top:44,
-            right:5,
-            child:button((){
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => s_d1()));} , Icons.notifications, Color(0xfff2e9db),
-                Color(0xffe8652d),"btn5"),
-          ),
+          ]),
+        ),
+        Positioned(
+          top:44,
+          left:5,
+          child:button(()async {
+            // show input autocomplete with selected mode
+            // then get the Prediction selected
+            Prediction p = await PlacesAutocomplete.show(
+              context: context,
+              mode: Mode.overlay,
+              apiKey: "AIzaSyCN5CJGsvRnutmMNhpN8toEprd3fn7cIBg",
+            );
+            displayPrediction(p);
+          }, Icons.search, Color(0xfff2e9db), Color(0xffe8652d),"btn1"),
+        ),
+        Positioned(
+          top:44,
+          right:5,
+          child:button((){
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => s_d1()));} , Icons.notifications, Color(0xfff2e9db),
+              Color(0xffe8652d),"btn5"),
+        ),
 
-          // selectGroup (),
-          Dragging(group: selectedGroup,),
-          _build_Nav_Bar(),
+        // selectGroup (),
+        Dragging(group: selectedGroup,),
+      ],
+    );
+  }
+
+  Widget body ;
+  int _selectedTabIndex = 0;
+  _changeIndex(int index) {
+    setState(() {
+      _selectedTabIndex = index;
+      //body = pages[index];
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+      setState(() {
+        user = Provider
+            .of<User>(context)
+            .utilisateur;
+        setAlertListener () ;
+        pages = [
+          map () ,
+          cercleUser(),
+          SosPage(),
+          messaging(),
+          SettingPage()
+        ] ;
+        body = pages [_selectedTabIndex];
+      });
+    return Scaffold(
+      bottomNavigationBar:BottomNavigationBar(
+        currentIndex: _selectedTabIndex,
+        onTap: _changeIndex,
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.map), title: Text("Map")),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.group), title: Text("Mes groupes")),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.add_alert), title: Text("Alerte")),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.chat), title: Text("Messages")),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings), title: Text("Reglages") ),
         ],
+        fixedColor: Color(0xfff1b97a),
       ),
-
+      body: body ,
     );
   }
 
@@ -725,4 +774,24 @@ class _MyHomePageState_2 extends State<HomePages_2> {
       ],
     );
   }*/
+}
+AlertDialog alertMessage (BuildContext context , Message alert ){
+  return AlertDialog(
+    title: Text(alert.expediteurNom+" is in trouble",
+        style: TextStyle(
+          color: Color(0xff739D84),
+        )),
+    content: Text(
+        alert.expediteurNom+" is having a problem"),
+    actions: <Widget>[
+      FlatButton(
+          child: Text('Okay',
+              style: TextStyle(
+                color: Color(0xffE8652D),
+              )),
+          onPressed: () {
+            Navigator.pop(context);
+          }),
+    ],
+  );
 }

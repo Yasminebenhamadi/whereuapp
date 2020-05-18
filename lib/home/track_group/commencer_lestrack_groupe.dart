@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:whereuapp/classes/Groupe.dart';
-import '../../classes/Utilisateur.dart';
 class track_groupe extends StatefulWidget {
   //LatLng dest ;
   final Group groupe ;

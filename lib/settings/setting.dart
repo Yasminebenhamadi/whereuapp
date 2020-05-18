@@ -43,7 +43,6 @@ class _SettingPageState extends State<SettingPage>{
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-
               Row( children: <Widget>[
                 Icon(Icons.settings ,size : 35.0 , color:  Color(0xffE8652D)),
                 SizedBox(
@@ -52,8 +51,6 @@ class _SettingPageState extends State<SettingPage>{
                 Text("Réglages",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35,color: Color(0xff739D84),),
                 ),
-
-
               ],
               ),
               SizedBox(
@@ -155,7 +152,6 @@ class _SettingPageState extends State<SettingPage>{
                       actions: <Widget> [
                         FlatButton ( child: Text ('Oui', style: TextStyle( color:  Color(0xffE8652D),)), onPressed:(){
                           Provider.of<User>(context, listen: false).signOut();
-                          Navigator.pop(context);
                         }
                           ),
                         FlatButton ( child: Text ('Non',
@@ -168,7 +164,6 @@ class _SettingPageState extends State<SettingPage>{
                   } ,
                   ),
                 ],
-
               ),
             ],
           ),
@@ -180,7 +175,8 @@ class _SettingPageState extends State<SettingPage>{
   @override
   Widget build(BuildContext context) {
     setState(() {
-      utilisateur = Provider.of<User>(context, listen: false).utilisateur;
+      utilisateur = Provider.of<User>(context).utilisateur;
+      print(utilisateur.sharableUserInfo.displayName + utilisateur.sharableUserInfo.photo.toString() );
     });
     return Scaffold(
       backgroundColor: Color(0xffF2E9DB),
