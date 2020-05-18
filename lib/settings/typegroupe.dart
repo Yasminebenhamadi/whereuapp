@@ -15,12 +15,10 @@ class RadioButtonExample extends StatefulWidget {
 class _RadioButtonExampleState extends State<RadioButtonExample> {
   Group group ;
   @override
-  void initState() {
-    super.initState();
-    group = Provider.of<User>(context).group;
-  }
-  @override
   Widget build(BuildContext context) {
+    setState((){
+      group = Provider.of<User>(context).group;
+    });
     return new Scaffold(
       appBar: AppBar(
         elevation: 0,

@@ -40,7 +40,7 @@ class _MyHomePageState_2 extends State<HomePages_2> {
   final StorageService _storageService = StorageService();
   final FirestoreService _firestoreService = FirestoreService() ;
   Group selectedGroup ;
-
+  DateTime lastSeenAlert ;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   StreamSubscription _locationSubscription;
   Utilisateur user ;
@@ -94,13 +94,18 @@ class _MyHomePageState_2 extends State<HomePages_2> {
     });
   }
 
-  Future<void> setAlertListener (){
-    Firestore.instance.collectionGroup('Discussion').where('ShowTo', arrayContains: user.sharableUserInfo.id)
-        .where('Type' , isEqualTo: 'TypeMessage.Alert').snapshots()
+  void setAlertListener (){
+    Firestore.instance.collectionGroup('Discussion').where('DateTime' , isGreaterThan: Timestamp.fromDate(lastSeenAlert))
+        .where('Type' , isEqualTo: 'TypeMessage.Alert')
+        .where('ShowTo', arrayContains: user.sharableUserInfo.id)
+      ..snapshots()
         .listen((querySnapshot){
       querySnapshot.documentChanges.forEach((documentChange){
         if(documentChange.type == DocumentChangeType.added){
+          print('aleeeeeeeeeeeeeeeeeeeeeeeeeeert');
+              print(documentChange.document.data);
               Message alert = Message.from(documentChange.document.documentID, documentChange.document.data);
+              lastSeenAlert = alert.dateTime;
               showDialog(
                   context: context,
                   builder: (context) => alertMessage(context,alert) ,
@@ -180,7 +185,7 @@ class _MyHomePageState_2 extends State<HomePages_2> {
     super.initState();
     setCustomMapPin();
     cloc();
-
+    lastSeenAlert = DateTime.now() ;
     //on_sync_coutton_pressed();
   }
   Widget messaging (){
@@ -776,6 +781,7 @@ class _MyHomePageState_2 extends State<HomePages_2> {
   }*/
 }
 AlertDialog alertMessage (BuildContext context , Message alert ){
+  print(alert.expediteurNom) ;
   return AlertDialog(
     title: Text(alert.expediteurNom+" is in trouble",
         style: TextStyle(

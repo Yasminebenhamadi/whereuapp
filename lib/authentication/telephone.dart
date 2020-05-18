@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:flutter/gestures.dart';
 import 'package:country_pickers/country.dart';
-import 'package:whereuapp/authentication/send_code.dart';
-
+import '../authentication/phoneAuth.dart' ;
 
 class PhonePage extends StatefulWidget {
   @override
@@ -149,7 +148,7 @@ class _PhonePageState extends State<PhonePage> {
                   else
                     phone = '+213 '+phoneNumber;
                   print(phone);
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Send(phoneNumber: phone,)));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> PhoneAuth(phoneNumber: phone,)));
                 }
               },
               padding: EdgeInsets.all(15.0),

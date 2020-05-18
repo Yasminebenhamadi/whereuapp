@@ -83,7 +83,7 @@ class _SendState extends State<Send> {
                             elevation: 5.0,
                             onPressed: () async {
                               await _sendCode();
-                           },
+                            },
                             padding: EdgeInsets.all(15.0),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(50.0)),

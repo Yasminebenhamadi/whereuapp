@@ -98,12 +98,10 @@ class _InvitePageState extends State<InvitePage> {
     );
   }
   @override
-  void initState() {
-    super.initState();
-    group = Provider.of<User>(context).group;
-  }
-  @override
   Widget build(BuildContext context) {
+    setState((){
+      group = Provider.of<User>(context).group;
+    });
     return Scaffold(
       appBar: AppBar(
         elevation: 0,

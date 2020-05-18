@@ -7,7 +7,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:whereuapp/classes/Groupe.dart';
 import 'package:whereuapp/classes/Request.dart';
 import 'package:whereuapp/classes/TimePlace.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:whereuapp/classes/Message.dart';
 import 'package:whereuapp/classes/SharableUserInfo.dart';

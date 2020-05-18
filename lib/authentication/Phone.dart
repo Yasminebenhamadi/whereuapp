@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:country_currency_pickers/country_pickers.dart';
 import 'package:whereuapp/authentication/Inscription.dart';
+import 'package:whereuapp/authentication/phoneAuth.dart';
 import 'package:whereuapp/authentication/send_code.dart';
 
 
@@ -167,7 +168,7 @@ class _PhoneState extends State<Phone> {
                               else
                                 phone = '+213 '+phoneNumber;
                               print(phone);
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Send(phoneNumber: phone,)));
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> PhoneAuth(phoneNumber: phone,)));
                             }
                           },
                           padding: EdgeInsets.all(15.0),

@@ -38,7 +38,7 @@ class SharableUserInfo implements Comparable<SharableUserInfo>{
     _id = id;
     _username = userData['Username'];
     _photo = userData['Photo'];
-    _displayName = userData['Displayname'];
+    _displayName = userData['DisplayName'];
     _active = userData['Active'];
     if(userData.containsKey('Position')){
       GeoPoint geoPoint = userData['Position'];

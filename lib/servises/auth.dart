@@ -56,8 +56,7 @@ class ServicesAuth {
       String uid = user.uid;
       if(uid!=null)
         {
-          print('++++++'+(await _firestoreService.userNameExists(username)).toString());
-          await _firestoreService.createAccount(uid, displayName, username,gender,dateOfBirth)
+          await _firestoreService.createAccount(uid, username, displayName,gender,dateOfBirth)
               .then((_){
             print('A user doc has been created');
           });
@@ -133,7 +132,7 @@ class ServicesAuth {
   //Auto-retrieval (detect SMS) / instant verification (no send/retrieve)
   void _verificationCompleted(AuthCredential credential) async {
     FirebaseUser user = await _firebaseAuth.currentUser();
-    _phoneVerified = false ;
+    _phoneVerified = true ;
     if(user!=null){
       if(user.phoneNumber == null){
         print('phooone emtyyyyy');
@@ -146,7 +145,6 @@ class ServicesAuth {
       }
       print('phone number added');
     }
-    throw SendCodeException('VERIFICATION_COMPLETED');
   }
   //Couldn't send SMS or Invalid Code
   void _verificationFailed(AuthException authException) async {

@@ -21,6 +21,7 @@ class _MyHomePageState extends State<Dragging> {
 
   Widget _buildFriendListTile(BuildContext context, int index) {
     Member member = widget.group.members[index];
+    member.membersInfo.display();
     return new ListTile(
       leading: new Hero(
         tag: index,

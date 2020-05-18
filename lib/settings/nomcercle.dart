@@ -132,13 +132,12 @@ class _NamecerclePageState extends State<NamecerclePage> {
         ),
       );
   }
-  @override
-  void initState() {
-     super.initState();
-     group = Provider.of<User>(context).group;
-  }
+
   @override
   Widget build(BuildContext context) {
+    setState((){
+      group = Provider.of<User>(context).group;
+    });
     return WillPopScope(
         onWillPop: () async {
            await moveToLastSreen() ;

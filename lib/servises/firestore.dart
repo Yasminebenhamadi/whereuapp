@@ -15,30 +15,31 @@ class FirestoreService {
   //Create a new User doc of the user
   Future<void> createAccount(String uid,String username,String displayName,Gender gender,DateTime dateOfBirth) async
   {
-    print('++++++'+(await userNameExists(username)).toString());
-    print('uid : $uid , username : $username , displayname : $displayName , Gender : $gender , data : $dateOfBirth');
     FirebaseMessaging _firebaseMessaging = FirebaseMessaging ();
     String fcmToken = await _firebaseMessaging.getToken();
-    print(fcmToken);
-        WriteBatch writeBatch = _firestore.batch();
-        DocumentReference usernameDoc = _firestore.collection('usernames').document(username);
-        writeBatch.setData(usernameDoc, usernameMap(uid,displayName));
-        writeBatch.setData(_firestore.collection('users').document(uid),{
-          'UID' : uid,
-          //'Displayname' : _displayName ,
-          'Username' : username,
-          'Photo' : false,
-          'Active' : true ,
-          'Gender' : gender.toString(),
-          'DateOfBirth' : Timestamp.fromDate(dateOfBirth),
-          'Online' : true,
-        });
-        writeBatch.setData(_firestore.collection('users').document(uid).collection('tokens').document(fcmToken), {
-          'token': fcmToken,
-          'createdAt': FieldValue.serverTimestamp(), // optional
-        });
-        print('writiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiing');
-        await writeBatch.commit();
+    if(await userNameExists(username)){
+      throw UsernameExistsException();
+    }
+    else{
+      WriteBatch writeBatch = _firestore.batch();
+      DocumentReference usernameDoc = _firestore.collection('usernames').document(username);
+      writeBatch.setData(usernameDoc, usernameMap(uid,displayName));
+      writeBatch.setData(_firestore.collection('users').document(uid),{
+        'UID' : uid,
+        'Displayname' : displayName ,
+        'Username' : username,
+        'Photo' : false,
+        'Active' : true ,
+        'Gender' : gender.toString(),
+        'DateOfBirth' : Timestamp.fromDate(dateOfBirth),
+        'Online' : true,
+      });
+      writeBatch.setData(_firestore.collection('users').document(uid).collection('tokens').document(fcmToken), {
+        'token': fcmToken,
+        'createdAt': FieldValue.serverTimestamp(), // optional
+      });
+      await writeBatch.commit();
+    }
   }
   Future<void> setToken (String uid) async {
     FirebaseMessaging _firebaseMessaging = FirebaseMessaging ();
